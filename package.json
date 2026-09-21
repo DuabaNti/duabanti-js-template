@@ -1,0 +1,10 @@
+{
+  "name": "duabanti-js",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "DuabaNti JavaScript programme — weekly assignments",
+  "scripts": {
+    "check": "node --test tests/"
+  }
+}

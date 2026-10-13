@@ -5,6 +5,6 @@
   "type": "commonjs",
   "description": "DuabaNti JavaScript programme — weekly assignments",
   "scripts": {
-    "check": "node --test tests/"
+    "check": "echo \"Check one week at a time, e.g.: node --test tests/week02.test.mjs\""
   }
 }

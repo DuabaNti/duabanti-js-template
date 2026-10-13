@@ -23,13 +23,17 @@ and the checker will not find it.
 Every time you push, GitHub runs the checks for the weeks you have submitted and
 puts a ✅ or a ❌ next to your commit. Click the ❌ to read what failed.
 
-To run the same checks on your own machine before you push:
+You do not need to do anything else — the ✅/❌ on GitHub is enough. If you want
+to run one week's checks on your own machine before you push (from Week 4, once
+you are comfortable with the VSCode terminal), open the terminal in this folder
+and run that week's file:
 
 ```bash
-node --test tests/
+node --test tests/week02.test.mjs
 ```
 
-You need Node 18 or newer. There is nothing to install.
+Change `02` to the week you are checking. You need Node 18 or newer. There is
+nothing to install.
 
 ## What the tick actually means
 

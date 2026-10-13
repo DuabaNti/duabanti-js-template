@@ -1,7 +1,9 @@
 # duabanti-js-yourname
 
-Your work for the DuabaNti JavaScript programme. Rename this repo to
-`duabanti-js-` followed by your own name, all lowercase — `duabanti-js-ama`.
+Your work for the DuabaNti JavaScript programme. This repo is called
+`duabanti-js-` followed by your own name, all lowercase — `duabanti-js-ama`. You
+chose that name when you clicked **Use this template**; if it is different,
+change it under **Settings → Repository name**.
 
 ## Where your files go
 
@@ -51,7 +53,8 @@ and run that week's file:
 node --test tests/week02.test.mjs
 ```
 
-Change `02` to the week you are checking. You need Node 18 or newer. There is
+Change `02` to the week you are checking. You need Node 20 or newer — the LTS
+from nodejs.org is fine. There is
 nothing to install.
 
 ## What the tick actually means
@@ -59,7 +62,7 @@ nothing to install.
 ✅ means the automatic checks pass. It is **not** your mark — a mentor reads your
 code as well, and marks are for whether it works, whether it is clear, and
 whether you can explain it. A green tick with code you cannot explain is worth
-nothing at Open Lab.
+nothing when your mentor asks you to explain it.
 
 ❌ before the deadline is not a problem. It is the point. Fix it and push again.
 

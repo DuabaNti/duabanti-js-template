@@ -27,7 +27,7 @@ describe("Week 3 — Grade calculator", () => {
     }
   });
 
-  test("average of an empty list is 0, not a crash", () => {
+  test("average of an empty list is 0, not NaN", () => {
     const f = need(load(FILE, NAMES).fns, "average", FILE);
     const got = f([]);
     assert.ok(asNumber(got) === 0,
@@ -36,10 +36,21 @@ describe("Week 3 — Grade calculator", () => {
 
   test("getGrade gives the right letter", () => {
     const f = need(load(FILE, NAMES).fns, "getGrade", FILE);
-    for (const [score, want] of [[95, "A"], [90, "A"], [85, "B"], [75, "C"], [60, "D"], [50, "D"], [49, "F"], [20, "F"]]) {
+    const cases = [[95, "A"], [90, "A"], [89, "B"], [85, "B"], [80, "B"], [75, "C"], [70, "C"], [60, "D"], [50, "D"], [49, "F"], [20, "F"]];
+    for (const [score, want] of cases) {
       const got = f(score);
-      assert.equal(letter(got), want, `getGrade(${score}) gave back ${shown(got)} — expected "${want}"` +
-        (want === "A" && letter(got) !== "A" ? ". Check the highest grade first (lesson 1)." : ""));
+      if (letter(got) === want) continue;
+      let hint = "";
+      if (got === undefined) {
+        hint = " Did you forget `return`? Printing the letter with console.log is not the same as giving it back.";
+      } else if (typeof got === "string" && got.trim().length > 1) {
+        hint = ` Return just the letter, "${want}", with nothing around it.`;
+      } else if (want === "A") {
+        hint = " Check the highest grade first (lesson 1).";
+      } else if (score % 10 === 0 || score % 10 === 9) {
+        hint = ` ${score} sits on the edge of a band — check >= against > (the brief lists the bands).`;
+      }
+      assert.fail(`getGrade(${score}) gave back ${shown(got)} — expected "${want}".${hint}`);
     }
   });
 

@@ -62,8 +62,11 @@ function loadWith(fakeFetch) {
   }
 }
 
-/** Lets the file's own main() finish — the pretend fetch answers at once. */
-const settle = () => new Promise((resolve) => setTimeout(resolve, 100));
+/**
+ * Lets the file's own main() finish. The pretend fetch answers at once, but a
+ * file may wait on something else first (lesson 3's one-second pretend request).
+ */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 1500));
 
 /**
  * A crash inside the file's own async main() is an "unhandled rejection". The
@@ -166,7 +169,7 @@ describe("Week 9 — Fetch and wait", () => {
     const { output } = loadWith(downFetch);
     await settle();
     assert.ok(output.some((line) => /loading/i.test(line)),
-      'print a "Loading..." message before the data arrives, and make sure the file calls main() at the end (lesson 6)');
+      'print "Loading..." in main() before the first await, and make sure the file calls main() at the end (lesson 6)');
   });
 
   test("there is a comment explaining why await is needed", () => {

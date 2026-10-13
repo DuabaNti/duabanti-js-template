@@ -47,8 +47,10 @@ function code(file) {
 function specifiers(src) {
   const found = [];
   const patterns = [
-    /\bfrom\s*["']([^"']+)["']/g,               // import x from "y"   export { x } from "y"
-    /\bimport\s*["']([^"']+)["']/g,             // import "y"
+    // Anchored to the start of an import/export statement, so a message such as
+    // console.log("Loaded from './input.json'") is not mistaken for an import.
+    /^\s*(?:import|export)\b[^;"'`]*?\bfrom\s*["']([^"']+)["']/gm,  // import x from "y"   export { x } from "y"
+    /^\s*import\s*["']([^"']+)["']/gm,           // import "y"
     /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g,   // await import("y")
     /\brequire\s*\(\s*["']([^"']+)["']\s*\)/g,  // require("y")
   ];
@@ -176,8 +178,12 @@ describe("Week 10 — First Node script", () => {
     if (importing) {
       assert.equal(pkg.type, "module", say(
         `Your Week 10 files use import/export, but package.json says "type": ${JSON.stringify(pkg.type ?? "(missing)")}.`,
-        "Node will stop with: SyntaxError: Cannot use import statement outside a module.",
-        'Open package.json and change "commonjs" to "module":   "type": "module",',
+        pkg.type === "commonjs"
+          ? "Node will stop with: SyntaxError: Cannot use import statement outside a module."
+          : "Without it Node has to guess what kind of file this is, and other tools may guess wrong.",
+        pkg.type === undefined
+          ? 'Open package.json and add this line:   "type": "module",'
+          : `Open package.json and change ${JSON.stringify(pkg.type)} to "module":   "type": "module",`,
         `Do not run npm init — your repo already has a package.json. See ${LESSON.npm}.`,
       ));
     }

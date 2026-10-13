@@ -70,21 +70,28 @@ describe("Week 2 — Unit converter", () => {
 
   test("cedisToDollars applies a rate", () => {
     const loaded = load(FILE, NAMES);
-    const { found, got, printed } = answers(loaded, "cedisToDollars", 100);
-    const said = got === undefined ? (printed ? `printed "${printed}"` : "gave back nothing") : `gave back ${shown(got)}`;
+    const small = answers(loaded, "cedisToDollars", 100);
+    const big = answers(loaded, "cedisToDollars", 1000);
+    const said = small.got === undefined ? (small.printed ? `printed "${small.printed}"` : "gave back nothing") : `gave back ${shown(small.got)}`;
     // A dollar costs well over 1 cedi, so 100 cedis is some amount between 1 and 50
     // dollars whatever this week's rate is. The input itself (100) does not count.
+    // And 1000 cedis must come to ten times as much — so a number that merely sits
+    // in the sentence (the rate itself, say) is not mistaken for the answer.
+    const ok = small.found.some(
+      (n) => n > 1 && n < 50 && big.found.some((m) => Math.abs(m - 10 * n) <= Math.max(0.1, 0.05 * 10 * n))
+    );
     assert.ok(
-      found.some((n) => n > 1 && n < 50),
-      `cedisToDollars(100) ${said} — 100 cedis should come to somewhere between 1 and 50 dollars. Apply a rate.`
+      ok,
+      `cedisToDollars(100) ${said} — 100 cedis should come to somewhere between 1 and 50 dollars, ` +
+        `and cedisToDollars(1000) to ten times that. Multiply by a rate: GH₵1 ≈ $0.065 (lesson 6).`
     );
   });
 
   test("printed results are rounded sensibly — nobody needs 14 decimal places", () => {
     const { output } = load(FILE, NAMES);
     for (const line of output) {
-      const long = line.match(/\d+\.\d{5,}/);
-      assert.ok(!long, `"${line}" prints ${long?.[0]} — round it when you print (lesson 5: toFixed or Math.round)`);
+      const long = line.match(/\d+\.\d{4,}/);
+      assert.ok(!long, `"${line}" prints ${long?.[0]} — round results to 2 decimal places when you print them (lesson 5: toFixed(2))`);
     }
   });
 

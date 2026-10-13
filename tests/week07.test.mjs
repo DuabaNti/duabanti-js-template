@@ -102,7 +102,11 @@ describe("Week 7 — Class design", () => {
     const { output } = load(FILE);
     assert.ok(output.length > 0,
       "nothing was printed — call your summary method and print it: `console.log(madina.summary())` (lesson 2)");
-    assert.ok(output.some((l) => l.trim().length > 10 && !l.includes("[object Object]")),
-      "print the summary sentence your method returns, not a bare value or the object itself");
+    // A method printed without its brackets, `console.log(x.summary)`, shows up
+    // here as the method's own source text — not a sentence.
+    const looksLikeCode = (l) => /^\s*(?:async\s+)?[\w$]+\s*\([^)]*\)\s*\{/.test(l);
+    assert.ok(output.some((l) => l.trim().length > 10 && !l.includes("[object Object]") && !looksLikeCode(l)),
+      "print the summary sentence your method returns, not a bare value or the object itself — " +
+      "and call it with brackets: `console.log(madina.summary())`, not `console.log(madina.summary)`");
   });
 });

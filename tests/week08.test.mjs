@@ -79,8 +79,8 @@ describe("Week 8 — Bug hunt (7 bugs)", () => {
     assert.equal(typeof got, "string", `report gave back ${shown(got)} — it should return the finished report as text`);
     assert.match(got, /AMA/, "the report should have a line for each student");
     const lastLine = got.trim().split("\n").pop();
-    assert.match(lastLine, /\b2\b/,
-      `for two students the last line should say 2, like "2 students" — it says ${shown(lastLine)}`);
+    assert.match(lastLine, /\b2\s+students?\b/i,
+      `for two students the last line should say "2 students" — it says ${shown(lastLine)}`);
   });
 
   test("the whole file runs top to bottom without throwing", () => {

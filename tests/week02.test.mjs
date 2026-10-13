@@ -13,6 +13,9 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { load, need } from "./_harness.mjs";
 
+/** How a value reads in a message: NaN as NaN, not as JSON's "null". */
+const shown = (v) => (typeof v === "number" && Number.isNaN(v) ? "NaN" : JSON.stringify(v));
+
 const FILE = "week02-converter.js";
 const NAMES = ["cedisToDollars", "kmToMiles", "celsiusToFahrenheit"];
 
@@ -39,7 +42,7 @@ function answers(loaded, name, input) {
 function shows(loaded, name, input, expected, tolerance) {
   const { found, got, printed } = answers(loaded, name, input);
   const ok = found.some((n) => Math.abs(n - expected) <= tolerance);
-  const said = got === undefined ? (printed ? `printed "${printed}"` : "gave back nothing") : `gave back ${JSON.stringify(got)}`;
+  const said = got === undefined ? (printed ? `printed "${printed}"` : "gave back nothing") : `gave back ${shown(got)}`;
   assert.ok(
     ok,
     `${name}(${input}) ${said} — expected it to show about ${expected}.` +
@@ -68,7 +71,7 @@ describe("Week 2 — Unit converter", () => {
   test("cedisToDollars applies a rate", () => {
     const loaded = load(FILE, NAMES);
     const { found, got, printed } = answers(loaded, "cedisToDollars", 100);
-    const said = got === undefined ? (printed ? `printed "${printed}"` : "gave back nothing") : `gave back ${JSON.stringify(got)}`;
+    const said = got === undefined ? (printed ? `printed "${printed}"` : "gave back nothing") : `gave back ${shown(got)}`;
     // A dollar costs well over 1 cedi, so 100 cedis is some amount between 1 and 50
     // dollars whatever this week's rate is. The input itself (100) does not count.
     assert.ok(

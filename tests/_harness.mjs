@@ -16,7 +16,11 @@ import vm from "node:vm";
 
 export class StudentFileError extends Error {}
 
-export function load(file, names = []) {
+/**
+ * `overrides` replaces sandbox globals for one load — e.g. `{ fetch: fakeFetch }`
+ * so a test can decide what the network returns instead of using the real one.
+ */
+export function load(file, names = [], overrides = {}) {
   if (!existsSync(file)) {
     throw new StudentFileError(
       `\n  ${file} not found.\n` +
@@ -31,11 +35,21 @@ export function load(file, names = []) {
 
   const moduleObj = { exports: {} };
   const sandbox = {
-    console: { log: record, info: record, warn: record, error: record, debug: record },
+    // Every console method a lesson teaches, so a leftover `console.table` (Week 8)
+    // is recorded instead of crashing the whole file.
+    console: {
+      log: record, info: record, warn: record, error: record, debug: record,
+      table: record, dir: record, trace: record, count: record, timeEnd: record, timeLog: record,
+      group: record, groupCollapsed: record, groupEnd: () => {}, time: () => {}, assert: () => {},
+    },
     module: moduleObj,
     exports: moduleObj.exports,
-    require: () => {
-      throw new StudentFileError("require() is not available in the grader until Week 10.");
+    require: (name) => {
+      throw new StudentFileError(
+        `\n  ${file} calls require("${name}").\n` +
+          `  The checker runs your file with nobody at the keyboard, so it cannot use readline or other\n` +
+          `  modules until Week 10. Put your data in the file, or read it from process.argv (Week 3).`
+      );
     },
     fetch,
     setTimeout,
@@ -45,7 +59,12 @@ export function load(file, names = []) {
     URL,
     TextEncoder,
     TextDecoder,
-    process: { argv: ["node", file], env: {} },
+    AbortSignal,
+    AbortController,
+    // exit() is a no-op: a file that exits early on bad input should not take the
+    // tests down with it. stdout.write is recorded like console.log.
+    process: { argv: ["node", file], env: {}, exit: () => {}, exitCode: 0, stdout: { write: (t) => record(String(t).replace(/\n$/, "")) } },
+    ...overrides,
   };
   sandbox.globalThis = sandbox;
 

@@ -8,7 +8,7 @@ import { load } from "./_harness.mjs";
 
 const FILE = "week07-classes.js";
 
-const classesIn = (src) => [...src.matchAll(/\bclass\s+([A-Za-z_$][\w$]*)/g)].map((m) => m[1]);
+const classesIn = (src) => [...src.matchAll(/^[ \t]*class\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]);
 
 /**
  * The source with every class body blanked out, so a `new X(` inside a static
@@ -19,7 +19,8 @@ const classesIn = (src) => [...src.matchAll(/\bclass\s+([A-Za-z_$][\w$]*)/g)].ma
 function outsideClasses(src) {
   let out = "";
   let i = 0;
-  const re = /\bclass\s+[A-Za-z_$][\w$]*[^{]*\{/g;
+  // Anchored to the start of a line, so `// Using the class` in a comment is not read as one.
+  const re = /^[ \t]*class\s+[A-Za-z_$][\w$]*[^{]*\{/gm;
   let m;
   while ((m = re.exec(src))) {
     out += src.slice(i, m.index);
@@ -99,14 +100,17 @@ describe("Week 7 — Class design", () => {
   });
 
   test("a summary is printed for a person to read", () => {
-    const { output } = load(FILE);
+    const { output, source } = load(FILE);
     assert.ok(output.length > 0,
       "nothing was printed — call your summary method and print it: `console.log(madina.summary())` (lesson 2)");
     // A method printed without its brackets, `console.log(x.summary)`, shows up
     // here as the method's own source text — not a sentence.
     const looksLikeCode = (l) => /^\s*(?:async\s+)?[\w$]+\s*\([^)]*\)\s*\{/.test(l);
-    assert.ok(output.some((l) => l.trim().length > 10 && !l.includes("[object Object]") && !looksLikeCode(l)),
-      "print the summary sentence your method returns, not a bare value or the object itself — " +
+    // A summary is built from the object's data, so it never appears word for word
+    // in the file. A fixed heading like "My trotro routes" does.
+    const builtByCode = (l) => !source.includes(l.trim());
+    assert.ok(output.some((l) => l.trim().length > 10 && !l.includes("[object Object]") && !looksLikeCode(l) && builtByCode(l)),
+      "print the summary sentence your method returns, not a bare value, a fixed heading or the object itself — " +
       "and call it with brackets: `console.log(madina.summary())`, not `console.log(madina.summary)`");
   });
 });

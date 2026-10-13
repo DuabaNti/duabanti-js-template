@@ -93,8 +93,8 @@ describe("Week 8 — Bug hunt (7 bugs)", () => {
     const tries = source.match(/\btry\s*\{/g) || [];
     assert.ok(tries.length >= 2,
       `found ${tries.length} try/catch — add two: around converting typedBonus, and around the final report call (lesson 3)`);
-    assert.doesNotMatch(source, /\bcatch\s*(\([^)]*\))?\s*\{\s*\}/,
-      "a catch block is empty — say what went wrong, or the error disappears (lesson 3, do not catch what you cannot handle)");
+    assert.doesNotMatch(source, /\bcatch\s*(\([^)]*\))?\s*\{(?:\s|\/\/[^\n]*|\/\*[\s\S]*?\*\/)*\}/,
+      "a catch block is empty (a comment on its own still counts as empty) — say what went wrong, or the error disappears (lesson 3, do not catch what you cannot handle)");
   });
 
   test("one function throws a useful error", () => {

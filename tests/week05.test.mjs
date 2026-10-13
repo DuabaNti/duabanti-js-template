@@ -30,6 +30,10 @@ const OTHERS = [
 const OTHERS_PASSED = ["Adjoa", "Fiifi", "Kofi"];
 const OTHERS_TOTAL = 237;
 
+/** For getTopScorer: someone above 90 comes before the real top scorer here, and nobody reaches 90 in the next. */
+const HIGH_FIRST = [{ name: "Akos", score: 92 }, { name: "Edem", score: 98 }, { name: "Baaba", score: 40 }];
+const NOBODY_90 = [{ name: "Yaa", score: 70 }, { name: "Ebo", score: 85 }, { name: "Esi", score: 62 }];
+
 /** A fresh copy every time, so one function cannot spoil the list for the next. */
 const fresh = (list = STUDENTS) => list.map((s) => ({ name: s.name, score: s.score }));
 const IGNORED = "Does it use the list it is given (its parameter), not a list of your own by name?";
@@ -98,6 +102,16 @@ describe("Week 5 — Array workout", () => {
     const otherName = typeof other === "string" ? other : other?.name;
     assert.equal(otherName, "Fiifi",
       `getTopScorer gave back ${shown(other)} for a list where Fiifi scored 97, the highest. ${IGNORED}`);
+    // Two more lists, so the answer has to come from comparing scores, not from a fixed number like 90.
+    for (const [list, top] of [[HIGH_FIRST, "Edem"], [NOBODY_90, "Ebo"]]) {
+      const got3 = hostify(need(load(FILE, NAMES).fns, "getTopScorer", FILE)(fresh(list)));
+      const name3 = typeof got3 === "string" ? got3 : got3?.name;
+      const scored = list.find((s) => s.name === top).score;
+      assert.equal(name3, top,
+        `getTopScorer gave back ${shown(got3)} for a list of ${list.map((s) => `${s.name} ${s.score}`).join(", ")} — ` +
+        `expected ${top}, who scored ${scored}, the highest. Find the highest score by comparing the students with each ` +
+        "other, not against a fixed number (lesson 4, \"The top scorer\").");
+    }
   });
 
   test("rank orders highest first", () => {

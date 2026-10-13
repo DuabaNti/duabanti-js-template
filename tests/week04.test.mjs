@@ -98,6 +98,9 @@ describe("Week 4 — Function workout", () => {
     for (const score of [-1, 101]) {
       assert.equal(call(loaded, "isValidScore", score).got, false, `${score} is not a valid score — isValidScore should return false`);
     }
+    assert.equal(call(loaded, "isValidScore", NaN).got, false,
+      "isValidScore(NaN) should return false — NaN is what Number(\"abc\") gives you, and it is not a score. " +
+      "Check that the score is 0 or more AND 100 or less, or use Number.isNaN (Week 3, lesson 5)");
   });
 
   test("the rewritten calculator at the bottom prints something", () => {

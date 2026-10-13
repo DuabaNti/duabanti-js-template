@@ -165,9 +165,17 @@ describe("Week 9 — Fetch and wait", () => {
     assert.ok(!got.includes("[object Object]"), "formatResult is printing an object instead of its fields");
   });
 
-  test('it prints "Loading..." when it runs', async () => {
-    const { output } = loadWith(downFetch);
+  test('it prints "Loading..." when it runs, and really fetches', async () => {
+    // Network down, but every call is recorded — so a file that never calls main() shows up.
+    const calls = [];
+    const recordingFetch = async (url) => {
+      calls.push(String(url));
+      throw new TypeError("fetch failed");
+    };
+    const { output } = loadWith(recordingFetch);
     await settle();
+    assert.ok(calls.length > 0,
+      "your file never called fetch when it ran — call `main();` on the last line, and have main() call fetchData (lesson 4)");
     assert.ok(output.some((line) => /loading/i.test(line)),
       'print "Loading..." in main() before the first await, and make sure the file calls main() at the end (lesson 6)');
   });
@@ -176,8 +184,15 @@ describe("Week 9 — Fetch and wait", () => {
     const { source } = loadWith(downFetch);
     // `//` after a colon is part of a web address ("https://..."), not a comment.
     const comments = [...source.matchAll(/(?<![:\w"'`])\/\/(.*)|\/\*([\s\S]*?)\*\//g)]
-      .map((m) => (m[1] || m[2] || "")).join(" ");
-    assert.match(comments, /await|async|wait/i,
-      "one comment should explain, in your words, why `await` is needed");
+      .map((m) => (m[1] || m[2] || "").trim());
+    // An explanation may run over several `//` lines in a row — read those as one.
+    const runs = [...source.matchAll(/(?:^[ \t]*\/\/.*(?:\r?\n|$))+/gm)]
+      .map((m) => m[0].replace(/^[ \t]*\/\//gm, " ").trim());
+    // One comment that talks about waiting and is long enough to be a reason —
+    // "// async stuff" is a label, not an explanation.
+    const explains = (c) => /wait/i.test(c) && c.split(/\s+/).length >= 4;
+    assert.ok([...comments, ...runs].some(explains),
+      "one comment should explain, in your words, why `await` is needed — a sentence, e.g. " +
+      "`// await is needed because fetch takes time: without it we get a Promise, not the data`");
   });
 });

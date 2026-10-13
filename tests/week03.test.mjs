@@ -36,7 +36,7 @@ describe("Week 3 — Grade calculator", () => {
 
   test("getGrade gives the right letter", () => {
     const f = need(load(FILE, NAMES).fns, "getGrade", FILE);
-    const cases = [[95, "A"], [90, "A"], [89, "B"], [85, "B"], [80, "B"], [75, "C"], [70, "C"], [60, "D"], [50, "D"], [49, "F"], [20, "F"]];
+    const cases = [[100, "A"], [95, "A"], [90, "A"], [89, "B"], [85, "B"], [80, "B"], [79, "C"], [75, "C"], [70, "C"], [69, "D"], [60, "D"], [50, "D"], [49, "F"], [20, "F"], [0, "F"]];
     for (const [score, want] of cases) {
       const got = f(score);
       if (letter(got) === want) continue;
@@ -45,6 +45,8 @@ describe("Week 3 — Grade calculator", () => {
         hint = " Did you forget `return`? Printing the letter with console.log is not the same as giving it back.";
       } else if (typeof got === "string" && got.trim().length > 1) {
         hint = ` Return just the letter, "${want}", with nothing around it.`;
+      } else if (score === 100) {
+        hint = " 100 is an A too — \"90 and above\" includes 100.";
       } else if (want === "A") {
         hint = " Check the highest grade first (lesson 1).";
       } else if (score % 10 === 0 || score % 10 === 9) {
@@ -58,6 +60,9 @@ describe("Week 3 — Grade calculator", () => {
     const f = need(load(FILE, NAMES).fns, "isValidScore", FILE);
     for (const score of [0, 50, 100]) assert.equal(f(score), true, `${score} is a valid score — isValidScore should return true`);
     for (const score of [-1, 101]) assert.equal(f(score), false, `${score} is not a valid score — isValidScore should return false`);
+    assert.equal(f(NaN), false,
+      "isValidScore(NaN) should return false — NaN is what Number(\"abc\") gives you, and it is not a score. " +
+      "Check that the score is 0 or more AND 100 or less, or use Number.isNaN (lesson 5)");
   });
 
   test("it prints something a human can read", () => {

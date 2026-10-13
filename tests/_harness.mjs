@@ -79,6 +79,15 @@ export function load(file, names = [], overrides = {}) {
     picked = vm.runInContext(wrapped, context, { timeout: 10_000, displayErrors: true });
   } catch (err) {
     if (err instanceof StudentFileError) throw err;
+    // `node file.js` allows a bare `return` at the top of a file, so the student
+    // sees no error when they run it — tell them what is actually wrong.
+    if (err && err.message === "Illegal return statement") {
+      throw new StudentFileError(
+        `\n  ${file} has a \`return\` outside any function.\n` +
+          `  Node lets that run at the top of a file, but the checker does not: \`return\` belongs\n` +
+          `  inside a function. At the top of the file, use if/else instead (Week 3, lesson 1).`
+      );
+    }
     throw new StudentFileError(
       `\n  ${file} threw an error before any test could run:\n` +
         `    ${err.message}\n` +

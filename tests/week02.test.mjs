@@ -83,14 +83,17 @@ describe("Week 2 — Unit converter", () => {
     assert.ok(
       ok,
       `cedisToDollars(100) ${said} — 100 cedis should come to somewhere between 1 and 50 dollars, ` +
-        `and cedisToDollars(1000) to ten times that. Multiply by a rate: GH₵1 ≈ $0.065 (lesson 6).`
+        `and cedisToDollars(1000) to ten times that. Multiply by a rate: GH₵1 ≈ $0.085 (lesson 6).`
     );
   });
 
   test("printed results are rounded sensibly — nobody needs 14 decimal places", () => {
-    const { output } = load(FILE, NAMES);
+    const { output, source } = load(FILE, NAMES);
     for (const line of output) {
-      const long = line.match(/\d+\.\d{4,}/);
+      // A number typed into the file — a rate such as 0.621371 printed as
+      // "1 km = 0.621371 miles" — is not a calculated result, so it is not
+      // judged. Only long decimals the program worked out have to be rounded.
+      const long = [...line.matchAll(/\d+\.\d{4,}/g)].map((m) => m[0]).find((n) => !source.includes(n));
       assert.ok(!long, `"${line}" prints ${long?.[0]} — round results to 2 decimal places when you print them (lesson 5: toFixed(2))`);
     }
   });

@@ -36,8 +36,8 @@ jobs:
             # This has to be a glob into an array, NOT `ls week${num}-*.js`.
             # nullglob is on, so an unmatched pattern expands to nothing at all and
             # `ls` would then run with no arguments — listing the directory and
-            # succeeding. Every week ran on every push, so a student who had done
-            # only week 2 saw seven other weeks fail and a red X on correct work.
+            # succeeding — so every week would run on every push, and a student
+            # who has done only week 2 would see weeks they have not reached fail.
             #
             # Week 10 is not special-cased either: its file is week10-node.js, so
             # the same glob finds it once they have written it.

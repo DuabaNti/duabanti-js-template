@@ -168,25 +168,29 @@ describe("Week 10 — First Node script", () => {
     }
   });
 
-  test('package.json "type" matches the way your files import', () => {
+  test('package.json says "type": "module", and your files use import', () => {
     needEntry();
     const pkg = readPackage();
     const sources = week10Files().map(code);
     const importing = sources.some(usesImportSyntax);
     const requiring = sources.some(usesRequire);
 
-    if (importing) {
-      assert.equal(pkg.type, "module", say(
-        `Your Week 10 files use import/export, but package.json says "type": ${JSON.stringify(pkg.type ?? "(missing)")}.`,
-        pkg.type === "commonjs"
-          ? "Node will stop with: SyntaxError: Cannot use import statement outside a module."
-          : "Without it Node has to guess what kind of file this is, and other tools may guess wrong.",
-        pkg.type === undefined
-          ? 'Open package.json and add this line:   "type": "module",'
-          : `Open package.json and change ${JSON.stringify(pkg.type)} to "module":   "type": "module",`,
-        `Do not run npm init — your repo already has a package.json. See ${LESSON.npm}.`,
-      ));
-    }
+    // Week 10 is the ES modules week, so "module" is required whichever way the
+    // files are written — a require-based submission is not what was asked for.
+    assert.equal(pkg.type, "module", say(
+      importing
+        ? `Your Week 10 files use import/export, but package.json says "type": ${JSON.stringify(pkg.type ?? "(missing)")}.`
+        : `package.json says "type": ${JSON.stringify(pkg.type ?? "(missing)")}. Week 10 uses ES modules, so it has to say "type": "module".`,
+      importing && pkg.type === "commonjs"
+        ? "Node will stop with: SyntaxError: Cannot use import statement outside a module."
+        : importing
+          ? "Without it Node has to guess what kind of file this is, and other tools may guess wrong."
+          : "Write your Week 10 files with import and export, not require and module.exports.",
+      pkg.type === undefined
+        ? 'Open package.json and add this line:   "type": "module",'
+        : `Open package.json and change ${JSON.stringify(pkg.type)} to "module":   "type": "module",`,
+      `Do not run npm init — your repo already has a package.json. See ${LESSON.npm} and ${LESSON.modules}.`,
+    ));
     if (requiring && pkg.type === "module") {
       assert.fail(say(
         'package.json says "type": "module", but your Week 10 files use require or module.exports.',
@@ -303,7 +307,7 @@ describe("Week 10 — First Node script", () => {
     const wanted = [
       ["What I am building", /build/i],
       ["Who it is for", /\bwho\b/i],
-      ["The three things it must do", /three/i],
+      ["The three things it must do", /three|\b3\b/i],
       ["What might go wrong", /wrong/i],
     ];
     const missing = wanted.filter(([, re]) => !headings.some((h) => re.test(h))).map(([name]) => name);

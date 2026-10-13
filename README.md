@@ -53,7 +53,7 @@ and run that week's file:
 node --test tests/week02.test.mjs
 ```
 
-Change `02` to the week you are checking. You need Node 20 or newer — the LTS
+Change `02` to the week you are checking. You need Node 22 or newer — the LTS
 from nodejs.org is fine. There is
 nothing to install.
 

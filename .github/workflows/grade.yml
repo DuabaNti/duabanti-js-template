@@ -46,6 +46,26 @@ jobs:
               echo "::group::$week"
               node --test "$test" || any=1
               echo "::endgroup::"
+              continue
+            fi
+
+            # No file with the exact name. A near miss — week2-converter.js,
+            # Week02-converter.js, week03-grade-calculator.mjs — is not "no file
+            # yet": skipping it would show a green tick for work that was never
+            # checked. Say what the name has to be, and fail.
+            expected=$(grep -oE 'const FILE = "[^"]+"' "$test" | cut -d'"' -f2)
+            [ -z "$expected" ] && expected="week${num}-node.js"
+            n=$((10#$num))
+            near=""
+            for f in *.js *.mjs; do
+              lower=$(printf '%s' "$f" | tr 'A-Z' 'a-z')
+              if [[ "$lower" =~ ^week[\ _-]?0?${n}([^0-9].*)?\.m?js$ ]]; then near="$near $f"; fi
+            done
+            if [ -n "$near" ]; then
+              for f in $near; do
+                echo "::error file=$f::$f is not checked: the checker looks for exactly $expected. Rename it (in GitHub Desktop or VSCode), commit and push."
+              done
+              any=1
             else
               echo "$week — no file yet, skipping"
             fi

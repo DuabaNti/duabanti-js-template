@@ -40,6 +40,9 @@ this repo.
 
 Every time you push, GitHub runs the checks for the weeks you have submitted and
 puts a ✅ or a ❌ next to your commit. Click the ❌ to read what failed.
+A week's checks run once its file is in the top folder with the exact name from
+the brief. A file with a near-miss name — `week2-converter.js` for
+`week02-converter.js` — gets a ❌ telling you the name it has to have.
 
 **Weeks 6, 11 and 12 are read by a person only** — there is no automatic check
 for them, so no tick appears for that work.
